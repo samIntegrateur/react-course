@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import './App.css';
 import Person from './Person/Person';
+import Validation from './Validation/Validation';
+import Char from './Char/Char';
 
 // container / stateful / smart component (they use state)
 class App extends Component {
@@ -12,18 +14,17 @@ class App extends Component {
     ],
     otherState: 'other value',
     userName: 'Bob',
-    showPersons: false
+    showPersons: false,
+    inputText: ''
   }
 
   deletePersonHandler = (personIndex) => {
     const persons = [...this.state.persons];
     persons.splice(personIndex, 1);
-    this.setState({persons: persons})
+    this.setState({persons: persons.join('')})
   }
 
   nameChangeHandler = (event, id) => {
-    console.log('event', event);
-    console.log('id',id);
     const personIndex = this.state.persons.findIndex(p => {
       return p.id === id;
     });
@@ -34,8 +35,6 @@ class App extends Component {
 
     person.name = event.target.value;
 
-    console.log('person', person);
-
     const persons = [...this.state.persons];
     persons[personIndex] = person;
 
@@ -45,6 +44,17 @@ class App extends Component {
   togglePersonsHandler = () => {
     const doesShow = this.state.showPersons;
     this.setState({showPersons: !doesShow});
+  }
+
+  inputChangeHandler = (event) => {
+    const inputText = event.target.value;
+    this.setState({inputText: inputText});
+  }
+
+  deleteCharHandler = (charIndex) => {
+    const chars = [...this.state.inputText];
+    chars.splice(charIndex, 1);
+    this.setState({inputText: chars.join('')});
   }
 
   render() {
@@ -74,6 +84,14 @@ class App extends Component {
       );
     }
 
+    const chars = this.state.inputText.split('').map((char, index) => {
+      return <Char
+        char={char}
+        key={index}
+        click={() => this.deleteCharHandler(index)}
+      />
+    });
+
     return (
       <div className="App">
         <h1>Hello world</h1>
@@ -83,6 +101,13 @@ class App extends Component {
           onClick={this.togglePersonsHandler}>Toggle persons</button>
 
           {persons}
+
+
+        <p>length of following input : {this.state.inputText.length}</p>
+        <input type="text" onChange={this.inputChangeHandler} value={this.state.inputText} />
+        <Validation inputLength={this.state.inputText.length} />
+
+        {chars}
 
       </div>
     );
