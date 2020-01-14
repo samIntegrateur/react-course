@@ -1,8 +1,29 @@
 import React, { Component } from 'react';
-import './App.css';
+// import Radium, { StyleRoot } from 'radium';
+import styled from 'styled-components';
+// using css modules (https://www.udemy.com/course/react-the-complete-guide-incl-redux/learn/lecture/16851076#overview)
+// we need to specify in className which class we need from this file
+// a unique class will be generated (see modules in webpack config)
+import classes from './App.css';
 import Person from './Person/Person';
 import Validation from './Validation/Validation';
 import Char from './Char/Char';
+
+// const StyledButton = styled.button`
+//  // we define a prop for conditional style
+//  // it creates a different class
+//  background-color: ${props => props.isOpened ? 'red': 'green'};
+//  color: white;
+//  font: inherit;
+//  border: 1px solid seagreen;
+//  padding: 0.3rem;
+//  cursor: pointer;
+//
+//  &:hover {
+//    background-color: ${props => props.isOpened ? 'salmon': 'lightgreen'};
+//    color: black;
+//  }
+// `;
 
 // container / stateful / smart component (they use state)
 class App extends Component {
@@ -21,7 +42,7 @@ class App extends Component {
   deletePersonHandler = (personIndex) => {
     const persons = [...this.state.persons];
     persons.splice(personIndex, 1);
-    this.setState({persons: persons.join('')})
+    this.setState({persons: persons})
   }
 
   nameChangeHandler = (event, id) => {
@@ -59,15 +80,24 @@ class App extends Component {
 
   render() {
     // inline style
-    const style = {
-      backgroundColor: 'white',
-      font: 'inherit',
-      border: '1px solid seagreen',
-      padding: '0.3rem',
-      cursor: 'pointer'
-    };
+    // const style = {
+    //   backgroundColor: 'green',
+    //   color: 'white',
+    //   font: 'inherit',
+    //   border: '1px solid seagreen',
+    //   padding: '0.3rem',
+    //   cursor: 'pointer',
+    //   // possible with Radium package
+    //   // ':hover': {
+    //   //   backgroundColor: 'lightgreen',
+    //   //   color: 'black'
+    //   // }
+    // };
 
     let persons = null;
+
+    // conditional class using css modules
+    let btnClass = [classes.button];
 
     if (this.state.showPersons) {
       persons = (
@@ -82,6 +112,14 @@ class App extends Component {
           })}
         </div>
       );
+
+      // style.backgroundColor = 'red';
+      // style[':hover'] = {
+      //   backgroundColor: 'lightred',
+      //     color: 'black'
+      // }
+
+      btnClass.push(classes.red);
     }
 
     const chars = this.state.inputText.split('').map((char, index) => {
@@ -92,24 +130,38 @@ class App extends Component {
       />
     });
 
+    const assignedClasses = [];
+    if (this.state.persons.length <= 2) {
+      assignedClasses.push(classes.red);
+    }
+    if (this.state.persons.length <= 1) {
+      assignedClasses.push(classes.bold);
+    }
+
     return (
-      <div className="App">
-        <h1>Hello world</h1>
-        <p>This is working</p>
-        <button
-          style={style}
-          onClick={this.togglePersonsHandler}>Toggle persons</button>
+      // <StyleRoot> was for radium
+        <div className={classes.App}>
+          <h1>Hello world</h1>
+          <p className={assignedClasses.join(' ')}>This is working</p>
+          <button
+            // isOpened={this.state.showPersons}
+            // className="button"
+            // usage of css modules
+            className={btnClass.join(' ')}
+            onClick={this.togglePersonsHandler}>Toggle persons
+          </button>
 
-          {persons}
+            {persons}
 
 
-        <p>length of following input : {this.state.inputText.length}</p>
-        <input type="text" onChange={this.inputChangeHandler} value={this.state.inputText} />
-        <Validation inputLength={this.state.inputText.length} />
+          <p>length of following input : {this.state.inputText.length}</p>
+          <input type="text" onChange={this.inputChangeHandler} value={this.state.inputText} />
+          <Validation inputLength={this.state.inputText.length} />
 
-        {chars}
+          {chars}
 
-      </div>
+        </div>
+      // </StyleRoot>
     );
     // we have 2 ways to bind argument to switchNameHandler
     // - with anonymous function call
@@ -121,3 +173,4 @@ class App extends Component {
 }
 
 export default App;
+// export default Radium(App);
